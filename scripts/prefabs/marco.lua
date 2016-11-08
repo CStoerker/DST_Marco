@@ -78,7 +78,9 @@ local function UpdateBuild(inst, data)
 	if PreviousRange == range then end
 	if PreviousRange ~= range then
 		SavedRange = range
+
 		if range == 0 then 
+			
 			inst.AnimState:SetBuild("marco")
 			local x, y, z = inst.Transform:GetWorldPosition()
 			local fx = SpawnPrefab("firesplash_fx")
@@ -138,12 +140,13 @@ end
 local function onloadegg(inst, data)
     local hp = data.newpercent
     if 0.111 >= hp then
+    		inst.components.health.currenthealth = 30
 		onbecameegg(inst)
 	end
-    if 0.222 > hp then
+    if 0.5 > hp then
     	inst.components.health:StartRegen(1,3)
     	end
-    if 0.222 <= hp then
+    if 0.5 <= hp then
 	inst.components.health:StopRegen()
 		
 	end
@@ -166,9 +169,9 @@ local master_postinit = function(inst)
 	
 	-- Stats	
 	inst.components.health:SetMaxHealth(225)
-	inst.components.hunger:SetMax(125)
+	inst.components.hunger:SetMax(100)
 	inst.components.sanity:SetMax(200)
-	inst.components.temperature.mintemp = 0
+	inst.components.temperature.mintemp = 30
 	inst.components.temperature.inherentinsulation = TUNING.INSULATION_MED
 	inst.components.temperature.inherentsummerinsulation = TUNING.INSULATION_MED
 	inst.components.temperature.overheattemp = 500
