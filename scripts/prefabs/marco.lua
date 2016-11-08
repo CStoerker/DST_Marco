@@ -61,6 +61,7 @@ local function rebirth(inst)
 		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
 		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
 		inst.components.health.absorb = 0
+		inst.components.health:StopRegen()
 		inst.components.temperature.current = TheWorld.state.temperature
 		local SavedRange = 0
 		return SavedRange
@@ -85,6 +86,7 @@ local function UpdateBuild(inst, data)
 			inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
 			inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
 			inst.components.health.absorb = 0
+			inst.components.health:StopRegen()
 		else
 			inst.AnimState:SetBuild("egg_marco_"..tostring(range))
 			local x, y, z = inst.Transform:GetWorldPosition()
@@ -124,6 +126,7 @@ inst:DoTaskInTime(300, function() -- you can change the time (now 300 seconds)
 	inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
 	inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
 	inst.components.health.absorb = 0
+	inst.components.health:StopRegen()
 	inst.components.temperature.current = TheWorld.state.temperature
 end)
 end
