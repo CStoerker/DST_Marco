@@ -84,8 +84,8 @@ local function UpdateBuild(inst, data)
 			local fx = SpawnPrefab("firesplash_fx")
 			inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
 			fx.Transform:SetPosition(x, y, z)
-			inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
-			inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
+			inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED) * 1.3
+			inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED) * 1.3
 			inst.components.health.absorb = 0
 			inst.components.health:StopRegen()
 			inst.components.combat.damagemultiplier = 1.3
@@ -95,11 +95,11 @@ local function UpdateBuild(inst, data)
 			local fx = SpawnPrefab("firesplash_fx")
 			inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
 			fx.Transform:SetPosition(x, y, z)
-			inst.components.locomotor.walkspeed = 0
-			inst.components.locomotor.runspeed = 0
+			inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED) / 2
+			inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED) / 2
 			inst.components.health:StartRegen(5,2)
 			inst.components.health.absorb = 0.99
-			inst.components.combat.damagemultiplier = 0.0
+			inst.components.combat.damagemultiplier = 0.01
 		end
 		if SavedRange == 3 then
 		rebirth(inst)
@@ -115,33 +115,40 @@ inst.AnimState:SetBuild("egg_marco")
 	local fx = SpawnPrefab("firesplash_fx")
 	inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
 	fx.Transform:SetPosition(x, y, z)
-inst.components.health.currenthealth = 50
-inst.components.locomotor.walkspeed = 0
-inst.components.locomotor.runspeed = 0
-inst.components.health.absorb = 0.999
-inst.components.temperature.current = TheWorld.state.temperature
-inst:DoTaskInTime(150, function() -- you can change the time (now 300 seconds)
-	inst.AnimState:SetBuild("marco")
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local fx = SpawnPrefab("firesplash_fx")
-	inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
-	fx.Transform:SetPosition(x, y, z)
-	inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
-	inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
-	inst.components.health.absorb = 0
-	inst.components.health:StopRegen()
+	inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED) / 2
+	inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED) / 2
+	inst.components.health.absorb = 0.99
 	inst.components.temperature.current = TheWorld.state.temperature
-	inst.components.combat.damagemultiplier = 0.0
-end)
+	
+	inst:DoTaskInTime(150, function() -- you can change the time (now 300 seconds)
+		inst.AnimState:SetBuild("marco")
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local fx = SpawnPrefab("firesplash_fx")
+		inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
+		fx.Transform:SetPosition(x, y, z)
+		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED)
+		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED)
+		inst.components.health.absorb = 0
+		inst.components.health:StopRegen()
+		inst.components.temperature.current = TheWorld.state.temperature
+		inst.components.combat.damagemultiplier = 0.01
+		end)
 end
 
 local function onloadegg(inst, data)
     local hp = data.newpercent
     if 0.111 >= hp then
 		onbecameegg(inst)
+	end
+    if 0.222 > hp then
+    	inst.components.health:StartRegen(1,3)
+    	end
+    if 0.222 <= hp then
+	inst.components.health:StopRegen()
 		
 	end
 end
+
 
 -- This initializes for both the server and client. Tags can be added here.
 local common_postinit = function(inst) 
@@ -164,17 +171,18 @@ local master_postinit = function(inst)
 	inst.components.temperature.mintemp = 0
 	inst.components.temperature.inherentinsulation = TUNING.INSULATION_MED
 	inst.components.temperature.inherentsummerinsulation = TUNING.INSULATION_MED
-	inst.components.temperature.overheattemp = 300
+	inst.components.temperature.overheattemp = 500
 	-- Damage multiplier (optional)
-    inst.components.combat.damagemultiplier = 1.3
+    	inst.components.combat.damagemultiplier = 1.3
+    	inst.components.health.fire_damage_scale = 0
 	
 	-- a light that surrounds marco
 	inst.entity:AddLight()
     inst.Light:Enable(true)
     inst.Light:SetRadius(2.0)
-    inst.Light:SetFalloff(.4)
-    inst.Light:SetIntensity(0.8)
-    inst.Light:SetColour(10/255,110/255,250/255)
+    inst.Light:SetFalloff(.3)
+    inst.Light:SetIntensity(0.9)
+    inst.Light:SetColour(10/255,110/255,255/255)
 	
 	inst:ListenForEvent("healthdelta", onloadegg)
 	inst:ListenForEvent("temperaturedelta", UpdateBuild)
