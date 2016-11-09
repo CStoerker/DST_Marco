@@ -1,7 +1,7 @@
 -- This information tells other players more about the mod
 name = "Marco the Phoenix"
 description = "The commander of the first division of the Whitebeard pirates. He is also a Zoan type Devil Fruit user with the form of a phoenix."
-author = "Alpah"
+author = "Alpah and Gleythar"
 version = "1.0.0" -- This is the version of the template. Change it to your own number.
 
 -- This is the URL name of the mod's thread on the forum; the part after the ? and before the first & in the url
