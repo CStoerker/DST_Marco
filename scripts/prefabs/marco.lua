@@ -18,7 +18,7 @@ local start_inv = {
 -- When the character is revived from human
 local function onbecamehuman(inst)
 	-- Set speed when reviving from ghost (optional)
-	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "marco_speed_mod", 1)
+	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "marco_speed_mod")
 end
 
 local function onbecameghost(inst)
@@ -51,7 +51,7 @@ local function GetRangeForTemperature(temp, ambient)
 
 end
 
-local SavedRange = 0
+
 local function rebirth(inst)
 	inst:DoTaskInTime(10, function()
 		inst.AnimState:SetBuild("marco")
@@ -64,22 +64,22 @@ local function rebirth(inst)
 		inst.components.health.absorb = 0
 		inst.components.temperature.current = TheWorld.state.temperature
 		inst.components.combat.damagemultiplier = 1.3
-		SavedRange = 0
-		return SavedRange
+		inst.SavedRange = 0
+		return inst.SavedRange
 	end)
 end
 
-local egg = 0
+
 local function UpdateBuild(inst, data)
 	local ambient_temp = TheWorld.state.temperature
     local cur_temp = inst.components.temperature:GetCurrent()
     local range = GetRangeForTemperature(cur_temp, ambient_temp)
-	local PreviousRange = SavedRange
-	if egg == 0 then end
-	if egg == 1 then 
+	local PreviousRange = inst.SavedRange
+	if inst.egg == 0 then end
+	if inst.egg == 1 then 
 		if PreviousRange == range then end
 		if PreviousRange ~= range then
-			SavedRange = range
+			inst.SavedRange = range
 			if range == 0 then 
 				inst.AnimState:SetBuild("marco")
 				local x, y, z = inst.Transform:GetWorldPosition()
@@ -101,19 +101,19 @@ local function UpdateBuild(inst, data)
 				inst.components.combat.damagemultiplier = 0.01
 			end
 		end
-			if SavedRange == 3 then
+			if inst.SavedRange == 3 then
 			rebirth(inst)
-			egg = 0
-			return egg
+			inst.egg = 0
+			return inst.egg
 			end
 
 	end
-	return SavedRange 
+	return inst.SavedRange 
 	
 end
 
 local function onbecameegg(inst)
-egg = 1
+inst.egg = 1
 inst.AnimState:SetBuild("egg_marco")
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local fx = SpawnPrefab("firesplash_fx")
@@ -136,18 +136,18 @@ inst.AnimState:SetBuild("egg_marco")
 		inst.components.health.absorb = 0
 		inst.components.temperature.current = TheWorld.state.temperature
 		inst.components.combat.damagemultiplier = 1.3
-		egg = 0 
-		return egg
+		inst.egg = 0 
+		return inst.egg
 		end)
-return egg
+return inst.egg
 end
 
 local function onloadegg(inst, data)
     local hp = data.newpercent
-	if egg == 1 then
+	if inst.egg == 1 then
 		inst.components.health:StartRegen(1, .5)
 	end 
-	if egg == 0 then 
+	if inst.egg == 0 then 
 		if 0.00888 >= hp then
 			inst.components.health.currenthealth = 5
 			onbecameegg(inst)
@@ -161,10 +161,11 @@ local function onloadegg(inst, data)
 	end
     
 	end
-
-
+	
 -- This initializes for both the server and client. Tags can be added here.
 local common_postinit = function(inst) 
+	inst.egg = 0
+	inst.SavedRange = 0
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "marco.tex" )
 end
@@ -188,7 +189,8 @@ local master_postinit = function(inst)
 	inst.components.temperature.overheattemp = TUNING.OVERHEAT_TEMP * 4
 	-- Damage multiplier (optional)
     inst.components.combat.damagemultiplier = 1.3
-    inst.components.health.fire_damage_scale = 0
+    inst.components.temperature.hurtrate = 0
+	inst.components.health.fire_damage_scale = 0
 	
 	-- a light that surrounds marco
 	inst.entity:AddLight()
